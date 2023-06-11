@@ -2,7 +2,7 @@ import { columns as approvedColumns } from "@/app/approved-vouchers";
 import { DataTable } from "@/components/ui/data-table";
 import { Vouchers } from "@/types";
 
-export default function () {
+export default function Page() {
   const data = [
     {
       id: "1",
