@@ -1,9 +1,9 @@
-import { columns as voucherColumns } from "@/app/voucher-settings";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { columns as voucherColumns } from "@/utils/columns/voucher-settings";
 
 export default function Page() {
   const data = [
@@ -62,7 +62,7 @@ export default function Page() {
   return (
     <main className="max-w-screen-xl mx-auto p-4 mt-8">
       <h1 className="text-2xl font-bold mb-4">Gift Voucher Settings</h1>
-      <div className="mt-4 flex flex-row gap-4 justify-center w-full">
+      <div className="mt-4 gap-4 grid grid-cols-1 lg:grid-cols-2">
         <Card className="w-full h-fit">
           <CardHeader>Set the limit for Gift voucher</CardHeader>
           <CardContent>
@@ -94,7 +94,7 @@ export default function Page() {
             </div>
           </CardContent>
         </Card>
-        <div className="w-full overflow-y-auto">
+        <div className="w-full">
           <DataTable columns={voucherColumns} data={data} />
         </div>
       </div>

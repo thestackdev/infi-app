@@ -1,6 +1,7 @@
-import Header from "@/components/Navbar";
+import { Toaster } from "@/components/Toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
+import PocketbaseProvider from "@/providers/pocketbase-provider";
 import "./globals.css";
 
 export const metadata = {
@@ -17,9 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn("min-h-screen bg-background font-sans antialiased")}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header className="mx-6" />
-          {children}
+          <PocketbaseProvider>{children}</PocketbaseProvider>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );

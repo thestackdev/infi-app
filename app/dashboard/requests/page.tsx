@@ -1,6 +1,6 @@
-import { columns as requestColumns } from "@/app/requests-columns";
 import { DataTable } from "@/components/ui/data-table";
 import { Requests } from "@/types";
+import { columns as requestColumns } from "@/utils/columns/requests-columns";
 
 export default function Page() {
   const requests = [

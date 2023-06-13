@@ -1,6 +1,6 @@
-import { columns as approvedColumns } from "@/app/approved-vouchers";
 import { DataTable } from "@/components/ui/data-table";
 import { Vouchers } from "@/types";
+import { columns as approvedColumns } from "@/utils/columns/approved-vouchers";
 
 export default function Page() {
   const data = [
@@ -90,7 +90,7 @@ export default function Page() {
     <div>
       <main className="max-w-screen-xl mx-auto p-4 mt-8">
         <div>
-          <h1 className="text-2xl font-bold mt-8">Requests</h1>
+          <h1 className="text-2xl font-bold mt-8 mb-4">Requests</h1>
           <DataTable columns={approvedColumns} data={data} />
         </div>
       </main>

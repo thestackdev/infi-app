@@ -1,111 +1,78 @@
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { DataTable } from "@/components/ui/data-table";
-import { Customers, Requests } from "@/types";
-import { Check, HardDrive, MessageSquare, Users } from "lucide-react";
-import { columns as customerColumns } from "./customers-columns";
-import { columns as requestColumns } from "./requests-columns";
+"use client";
 
-export default function Home() {
-  const requests = [
-    {
-      id: "1",
-      name: "Shanmukeshwar",
-      usage: "2,040 GB",
-      details: "Shanmukeshwar requested for airtel mobile recharge voucher",
-      status: "approved",
-      date: "6/10/2020",
-    },
-    {
-      id: "2",
-      name: "Rajat",
-      usage: "1,332 GB",
-      details: "Rajat requested for airtel mobile recharge voucher",
-      status: "rejected",
-      date: "6/10/2020",
-    },
-  ] as Requests[];
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/use-toast";
+import { usePocketbase } from "@/providers/pocketbase-provider";
+import { Loader, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-  const customers = [
-    {
-      id: "1",
-      name: "Shanmukeshwar",
-      email: "shanmukeshwar03@gmail.com",
-      mobile: 1234567890,
-      registeredDate: "6/10/2020",
-    },
-    {
-      id: "2",
-      name: "Rajat",
-      email: "rajat@example.com",
-      mobile: 1234567890,
-      registeredDate: "6/10/2020",
-    },
-  ] as Customers[];
+export default function Page() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [pageReady, setPageReady] = useState(false);
+  const { pocketbase, user } = usePocketbase();
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await pocketbase.admins.authWithPassword(email, password);
+    } catch (error: any) {
+      toast({ title: "Login Failed", description: error?.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) router.push("/dashboard");
+    else setPageReady(true);
+  }, [user]);
+
+  if (!pageReady)
+    return (
+      <div className="min-h-screen w-screen flex items-center justify-center">
+        <Loader2 className="animate-spin" size={64} />
+      </div>
+    );
 
   return (
-    <main className="max-w-screen-xl mx-auto p-4 mt-8">
-      <div className="mb-10">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row gap-4 items-center">
-              <div className="bg-orange-500 rounded-full p-3">
-                <Users size={30} />
-              </div>
-              <div className="flex flex-col gap-1">
-                <CardTitle>Total Customers</CardTitle>
-                <CardDescription>6389</CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row gap-4 items-center">
-              <div className="bg-green-500 rounded-full p-3">
-                <HardDrive size={30} />
-              </div>
-              <div className="flex flex-col gap-1">
-                <CardTitle>Data Usages</CardTitle>
-                <CardDescription>46,760 GB</CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row gap-4 items-center">
-              <div className="bg-green-500 rounded-full p-3">
-                <Check size={30} />
-              </div>
-              <div className="flex flex-col gap-1">
-                <CardTitle>Approved Requests</CardTitle>
-                <CardDescription>376</CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row gap-4 items-center">
-              <div className="bg-orange-500 rounded-full p-3">
-                <MessageSquare size={30} />
-              </div>
-              <div className="flex flex-col gap-1">
-                <CardTitle>Pending Reuquest</CardTitle>
-                <CardDescription>35</CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
-        </div>
-      </div>
-      <div>
-        <h1 className="text-2xl font-bold mt-8">Recent Requests</h1>
-        <DataTable columns={requestColumns} data={requests} />
-      </div>
-      <div>
-        <h1 className="text-2xl font-bold mt-8">Recent Customers</h1>
-        <DataTable columns={customerColumns} data={customers} />
-      </div>
+    <main className="max-w-screen-sm mx-auto p-4 mt-8">
+      <h1 className="text-2xl font-bold">Login</h1>
+      <Card className="mt-4 p-4">
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <Label>Email</Label>
+            <Input
+              className="mt-2"
+              type="email"
+              placeholder="user@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <Label>Password</Label>
+            <Input
+              className="mt-2"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <Button disabled={loading} className="mt-4 w-full">
+            {loading && <Loader className="mr-2 animate-spin" size={16} />}
+            Login
+          </Button>
+        </form>
+      </Card>
     </main>
   );
 }

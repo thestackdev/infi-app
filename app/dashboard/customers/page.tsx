@@ -1,6 +1,6 @@
-import { columns as customerColumns } from "@/app/customers-columns";
 import { DataTable } from "@/components/ui/data-table";
 import { Customers } from "@/types";
+import { columns as customerColumns } from "@/utils/columns/customers-columns";
 
 export default function Page() {
   const customers = [
