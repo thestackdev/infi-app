@@ -5,12 +5,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
+import pocketbaseServer from "@/lib/pocketbase-server";
 import { Customers, Requests } from "@/types";
 import { columns as customerColumns } from "@/utils/columns/customers-columns";
 import { columns as requestColumns } from "@/utils/columns/requests-columns";
 import { Check, HardDrive, MessageSquare, Users } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
   const requests = [
     {
       id: "1",
@@ -30,22 +31,21 @@ export default function Home() {
     },
   ] as Requests[];
 
-  const customers = [
-    {
-      id: "1",
-      name: "Shanmukeshwar",
-      email: "shanmukeshwar03@gmail.com",
-      mobile: 1234567890,
-      registeredDate: "6/10/2020",
-    },
-    {
-      id: "2",
-      name: "Rajat",
-      email: "rajat@example.com",
-      mobile: 1234567890,
-      registeredDate: "6/10/2020",
-    },
-  ] as Customers[];
+  const pocketbase = pocketbaseServer();
+
+  const customerResponse = await pocketbase
+    ?.collection("users")
+    .getList(1, 10, {
+      sort: "-created",
+    });
+
+  const customers = customerResponse?.items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    email: item.email,
+    mobile: item.mobile,
+    created: item.created,
+  })) as Customers[];
 
   return (
     <main className="max-w-screen-xl mx-auto p-4 mt-8">

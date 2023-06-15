@@ -70,7 +70,7 @@ export default function MainNav({
       >
         <Sheet>
           <SheetTrigger asChild>
-            <AlignLeft size={30} />
+            <AlignLeft className="cursor-pointer" size={30} />
           </SheetTrigger>
           <SheetContent
             position="left"

@@ -13,7 +13,7 @@ export type Customers = {
   name: string;
   email: string;
   mobile: number;
-  registeredDate: string;
+  created: string;
 };
 
 export type Vouchers = {

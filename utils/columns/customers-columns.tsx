@@ -3,33 +3,33 @@
 import { Customers } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { EyeIcon, Trash2 } from "lucide-react";
+import moment from "moment";
 
 export const columns: ColumnDef<Customers>[] = [
   {
     accessorKey: "name",
-    header: "CUSTOMER NAME",
+    header: "Full Name",
   },
   {
     accessorKey: "email",
-    header: "EMAIL",
+    header: "Email",
   },
   {
     accessorKey: "mobile",
-    header: "MOBILE",
+    header: "Mobile",
   },
   {
-    accessorKey: "registeredDate",
-    header: "REGISTERED DATE",
+    accessorKey: "created",
+    header: "Created",
+    cell: ({ row }) => moment(row.original.created).format("DD/MM/YYYY"),
   },
   {
-    id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const payment = row.original;
       return (
-        <div className="flex flex-row gap-2">
-          <Trash2 className="cursor-pointer" />
-          <EyeIcon className="cursor-pointer" />
+        <div className="flex flex-row gap-4">
+          <Trash2 className="cursor-pointer" size={19} />
+          <EyeIcon className="cursor-pointer" size={19} />
         </div>
       );
     },

@@ -29,16 +29,27 @@ export default function PocketbaseProvider({
     pocketbase.authStore.loadFromCookie(document.cookie);
 
     const unsubscribe = pocketbase.authStore.onChange((token, model) => {
+      if (!token) return;
+
       document.cookie = pocketbase.authStore.exportToCookie({
         httpOnly: false,
       });
       setUser(model);
-      router.refresh();
     });
     return () => unsubscribe();
   }, []);
 
-  const logout = () => pocketbase.authStore.clear();
+  const logout = () => {
+    pocketbase.authStore.clear();
+    setUser(null);
+    document.cookie = pocketbase.authStore.exportToCookie({
+      maxAge: 0,
+      httpOnly: false,
+    });
+
+    pocketbase.admins.authRefresh();
+    router.replace("/");
+  };
 
   return (
     <PocketbaseContext.Provider value={{ pocketbase, logout, user }}>
