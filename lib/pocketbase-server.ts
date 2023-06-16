@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import Pocketbase from "pocketbase";
 
-const BASE_URL = "https://pocketbase.codefusionz.com";
+const BASE_URL = process.env.SERVER_URL;
 
 export default function pocketbaseServer() {
   const pocketbase = new Pocketbase(BASE_URL);

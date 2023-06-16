@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Pocketbase, { Admin, Record } from "pocketbase";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-const BASE_URL = "https://pocketbase.codefusionz.com";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type PocketbaseContextType = {
   pocketbase: Pocketbase;
