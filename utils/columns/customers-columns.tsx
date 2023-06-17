@@ -4,6 +4,7 @@ import { Customers } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { EyeIcon, Trash2 } from "lucide-react";
 import moment from "moment";
+import Link from "next/link";
 
 export const columns: ColumnDef<Customers>[] = [
   {
@@ -29,7 +30,9 @@ export const columns: ColumnDef<Customers>[] = [
       return (
         <div className="flex flex-row gap-4">
           <Trash2 className="cursor-pointer" size={19} />
-          <EyeIcon className="cursor-pointer" size={19} />
+          <Link href={`/dashboard/customers/${row.original.id}`}>
+            <EyeIcon className="cursor-pointer" size={19} />
+          </Link>
         </div>
       );
     },

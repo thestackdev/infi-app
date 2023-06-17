@@ -30,3 +30,10 @@ export type VoucherTypes = {
   type: string;
   company: string;
 };
+
+export type History = {
+  id?: string;
+  url: string;
+  package_name: string;
+  created: string;
+};
