@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import Pocketbase from "pocketbase";
 
-const BASE_URL = process.env.SERVER_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function pocketbaseServer() {
   const pocketbase = new Pocketbase(BASE_URL);
