@@ -1,14 +1,9 @@
 import { DataTable } from "@/components/ui/data-table";
-import pocketbaseServer from "@/lib/pocketbase-server";
-import { Customers } from "@/types";
+import db from "@/db";
 import { columns as customerColumns } from "@/utils/columns/customers-columns";
 
 export default async function Page() {
-  const pocketbase = pocketbaseServer();
-
-  const customers = (await pocketbase?.collection("users").getFullList({
-    sort: "-created",
-  })) as Customers[];
+  const customers = await db.query.users.findMany();
 
   return (
     <main className="max-w-screen-xl mx-auto p-4 mt-8">

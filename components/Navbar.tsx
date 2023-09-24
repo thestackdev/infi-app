@@ -1,3 +1,5 @@
+"use client";
+
 import { ThemeToggle } from "@/app/theme-toggle";
 import {
   Accordion,
@@ -12,8 +14,8 @@ import {
   SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import pocketbaseServer from "@/lib/pocketbase-server";
 import { cn } from "@/lib/utils";
+import { Session } from "@/types";
 import {
   AlignLeft,
   GiftIcon,
@@ -27,6 +29,8 @@ import Logout from "./Logout";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
+import { useEffect } from "react";
+import useUserStore from "@/hooks/userUserStore";
 
 const sidebarItems = [
   {
@@ -51,13 +55,18 @@ const sidebarItems = [
   },
 ];
 
-export default function MainNav({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLElement>) {
-  const pocketbase = pocketbaseServer();
+interface MainNavProps {
+  className?: string;
+  session: Session;
+}
 
-  const user = pocketbase?.authStore.model;
+export default function MainNav({ className, session }: MainNavProps) {
+  const { setUser } = useUserStore();
+
+  useEffect(() => {
+    if (!session) return;
+    setUser(session);
+  }, [session]);
 
   return (
     <>
@@ -66,7 +75,6 @@ export default function MainNav({
           "flex items-center justify-between p-2 space-x-4 mx-auto lg:space-x-6",
           className
         )}
-        {...props}
       >
         <Sheet>
           <SheetTrigger asChild>
@@ -117,7 +125,7 @@ export default function MainNav({
               </ul>
             </SheetDescription>
             <div className="flex flex-col w-full items-start">
-              <Label className="text-lg mb-4">{user?.email}</Label>
+              <Label className="text-lg mb-4">{session?.email}</Label>
               <Logout />
             </div>
           </SheetContent>

@@ -5,47 +5,48 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
-import pocketbaseServer from "@/lib/pocketbase-server";
-import { Customers, Requests } from "@/types";
+import db from "@/db";
+import { dataUsage, requests, users } from "@/db/schema";
+import { Request } from "@/types";
 import { columns as customerColumns } from "@/utils/columns/customers-columns";
 import { columns as requestColumns } from "@/utils/columns/requests-columns";
+import { desc, eq, sql } from "drizzle-orm";
 import { Check, HardDrive, MessageSquare, Users } from "lucide-react";
 
 export default async function Home() {
-  const requests = [
-    {
-      id: "1",
-      name: "Shanmukeshwar",
-      usage: "2,040 GB",
-      details: "Shanmukeshwar requested for airtel mobile recharge voucher",
-      status: "approved",
-      date: "6/10/2020",
+  const [{ count: totalCustomers }] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(users);
+
+  const customers = await db.query.users.findMany({
+    limit: 10,
+  });
+
+  const [{ total: usages }] = await db
+    .select({ total: sql<number>`sum(${dataUsage.data})` })
+    .from(dataUsage);
+
+  const recentRequests = await db.query.requests.findMany({
+    with: {
+      user: {
+        with: {
+          usage: true,
+        },
+      },
     },
-    {
-      id: "2",
-      name: "Rajat",
-      usage: "1,332 GB",
-      details: "Rajat requested for airtel mobile recharge voucher",
-      status: "rejected",
-      date: "6/10/2020",
-    },
-  ] as Requests[];
+    orderBy: desc(requests.createdAt),
+    limit: 10,
+  });
 
-  const pocketbase = pocketbaseServer();
+  const [{ count: approvedRequests }] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(requests)
+    .where(eq(requests.status, "approved"));
 
-  const customerResponse = await pocketbase
-    ?.collection("users")
-    .getList(1, 10, {
-      sort: "-created",
-    });
-
-  const customers = customerResponse?.items.map((item) => ({
-    id: item.id,
-    name: item.name,
-    email: item.email,
-    mobile: item.mobile,
-    created: item.created,
-  })) as Customers[];
+  const [{ count: pendingRequests }] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(requests)
+    .where(eq(requests.status, "pending"));
 
   return (
     <main className="max-w-screen-xl mx-auto p-4 mt-8">
@@ -59,7 +60,7 @@ export default async function Home() {
               </div>
               <div className="flex flex-col gap-1">
                 <CardTitle>Total Customers</CardTitle>
-                <CardDescription>6389</CardDescription>
+                <CardDescription>{totalCustomers}</CardDescription>
               </div>
             </CardHeader>
           </Card>
@@ -70,7 +71,7 @@ export default async function Home() {
               </div>
               <div className="flex flex-col gap-1">
                 <CardTitle>Data Usages</CardTitle>
-                <CardDescription>46,760 GB</CardDescription>
+                <CardDescription>{usages}</CardDescription>
               </div>
             </CardHeader>
           </Card>
@@ -81,7 +82,7 @@ export default async function Home() {
               </div>
               <div className="flex flex-col gap-1">
                 <CardTitle>Approved Requests</CardTitle>
-                <CardDescription>376</CardDescription>
+                <CardDescription>{approvedRequests}</CardDescription>
               </div>
             </CardHeader>
           </Card>
@@ -92,7 +93,7 @@ export default async function Home() {
               </div>
               <div className="flex flex-col gap-1">
                 <CardTitle>Pending Reuquest</CardTitle>
-                <CardDescription>35</CardDescription>
+                <CardDescription>{pendingRequests}</CardDescription>
               </div>
             </CardHeader>
           </Card>
@@ -100,7 +101,7 @@ export default async function Home() {
       </div>
       <div>
         <h1 className="text-2xl font-bold mt-8 mb-4">Recent Requests</h1>
-        <DataTable columns={requestColumns} data={requests} />
+        <DataTable columns={requestColumns} data={recentRequests} />
       </div>
       <div>
         <h1 className="text-2xl font-bold mt-8 mb-4">Recent Customers</h1>

@@ -1,12 +1,12 @@
 "use client";
 
-import { Customers } from "@/types";
+import { Customers, User } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { EyeIcon, Trash2 } from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
 
-export const columns: ColumnDef<Customers>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "name",
     header: "Full Name",
@@ -22,7 +22,7 @@ export const columns: ColumnDef<Customers>[] = [
   {
     accessorKey: "created",
     header: "Created",
-    cell: ({ row }) => moment(row.original.created).format("DD/MM/YYYY"),
+    cell: ({ row }) => moment(row.original.createdAt).format("DD/MM/YYYY"),
   },
   {
     header: "Actions",

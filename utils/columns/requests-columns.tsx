@@ -13,17 +13,26 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Requests } from "@/types";
+import { RequestsWithUserWithUsage } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
+import moment from "moment";
 
-export const columns: ColumnDef<Requests>[] = [
+export const columns: ColumnDef<RequestsWithUserWithUsage>[] = [
   {
     accessorKey: "name",
     header: "CUSTOMER NAME",
+    cell: ({ row }) => {
+      const original = row.original;
+      return <span>{original.user.name}</span>;
+    },
   },
   {
     accessorKey: "usage",
-    header: "DATA TOTAL USAGES",
+    header: "DATA USAGE",
+    cell: ({ row }) => {
+      const original = row.original;
+      return <span>{original.user.usage.data}</span>;
+    },
   },
   {
     accessorKey: "details",
@@ -33,25 +42,28 @@ export const columns: ColumnDef<Requests>[] = [
     accessorKey: "status",
     header: "REQUEST STATUS",
     cell: ({ row }) => {
-      const payment = row.original;
+      const original = row.original;
       return (
         <Badge
-          variant={payment.status === "approved" ? "default" : "destructive"}
+          variant={original.status === "approved" ? "default" : "destructive"}
         >
-          {payment.status}
+          {original.status}
         </Badge>
       );
     },
   },
   {
-    accessorKey: "date",
+    accessorKey: "createdAt",
     header: "REQUEST DATE",
+    cell: ({ row }) => {
+      const original = row.original;
+      return <span>{moment(original.createdAt).format("DD/MM/YYYY")}</span>;
+    },
   },
   {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const payment = row.original;
       return (
         <Dialog>
           <DialogTrigger>
@@ -59,26 +71,30 @@ export const columns: ColumnDef<Requests>[] = [
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
-                Update Request Status for {row.original.name}
-              </DialogTitle>
-              <DialogDescription className="pt-4">
+              <DialogTitle>Update Request Status</DialogTitle>
+              <DialogDescription>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="coupon-code">Coupon Code</Label>
+                  <Label htmlFor="coupon-code" className="mt-4">
+                    Coupon Code
+                  </Label>
                   <Input
                     type="text"
                     id="coupon-code"
                     placeholder="Enter Coupon Code"
+                    className="mt-1"
                   />
                 </div>
               </DialogDescription>
-              <DialogDescription className="pt-4">
+              <DialogDescription>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="coupon-expiry">Coupon Expiry</Label>
+                  <Label htmlFor="coupon-expiry" className="mt-4">
+                    Coupon Expiry
+                  </Label>
                   <Input
                     type="date"
                     id="coupon-expiry"
                     placeholder="dd/mm/yy"
+                    className="mt-1"
                   />
                 </div>
               </DialogDescription>

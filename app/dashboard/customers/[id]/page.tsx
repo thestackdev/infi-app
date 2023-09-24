@@ -1,55 +1,37 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { usePocketbase } from "@/providers/pocketbase-provider";
-import { History } from "@/types";
+import db from "@/db";
+import { history } from "@/db/schema";
 import { columns as approvedColumns } from "@/utils/columns/approved-vouchers";
 import { columns as requestColumns } from "@/utils/columns/requests-columns";
 import { columns as userHistosy } from "@/utils/columns/user-history";
-import { Label } from "@radix-ui/react-label";
+import { Label } from "@/components/ui/label";
+import { eq } from "drizzle-orm";
 import moment from "moment";
-import { Admin, Record } from "pocketbase";
-import { useEffect, useState } from "react";
 
-export default function Page({ params }: any) {
-  const { pocketbase } = usePocketbase();
+type PageProps = {
+  params: {};
+  searchParams: { [key: string]: string | string[] | undefined };
+};
 
-  const [history, setHistory] = useState<History[]>([]);
-  const [user, setUser] = useState<Record | Admin | null>(null);
+export default async function Page({ searchParams }: PageProps) {
+  const id = searchParams.id as string;
 
-  async function getHistory() {
-    const resultList = (await pocketbase
-      ?.collection("history")
-      .getList(1, 10000, {
-        filter: `user="${params.id}"`,
-      })) as any;
-
-    setHistory(resultList?.items as History[]);
-  }
-
-  async function getUser() {
-    try {
-      const user = await pocketbase?.collection("users").getOne(params.id);
-      setUser(user);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  useEffect(() => {
-    getHistory();
-    getUser();
-  }, []);
+  const historyResponse = await db.query.history.findMany({
+    with: {
+      user: true,
+    },
+    where: eq(history.userId, id),
+  });
 
   return (
     <main className="max-w-screen-xl mx-auto p-4 mt-8">
       <div className="grid grid-cols-1 gap-4">
         <Card className="h-fit w-fit">
           <CardHeader>
-            <CardTitle>{user?.name}</CardTitle>
+            <CardTitle>{historyResponse[0]?.user.name}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -58,7 +40,7 @@ export default function Page({ params }: any) {
                 type="email"
                 id="email"
                 placeholder="Email"
-                value={user?.email}
+                value={historyResponse[0]?.user?.email}
                 disabled
               />
             </div>
@@ -68,7 +50,7 @@ export default function Page({ params }: any) {
                 type="number"
                 id="phone"
                 placeholder="Phone"
-                value={user?.mobile}
+                value={historyResponse[0]?.user?.mobile}
                 disabled
               />
             </div>
@@ -78,7 +60,9 @@ export default function Page({ params }: any) {
                 type="text"
                 id="created"
                 placeholder="Register At"
-                value={moment(user?.created).format("DD/MM/YYYY")}
+                value={moment(historyResponse[0]?.user?.createdAt).format(
+                  "DD/MM/YYYY"
+                )}
                 disabled
               />
             </div>
@@ -92,7 +76,7 @@ export default function Page({ params }: any) {
           <TabsTrigger value="requests">Requests</TabsTrigger>
         </TabsList>
         <TabsContent value="history">
-          <DataTable columns={userHistosy} data={history} />
+          <DataTable columns={userHistosy} data={historyResponse} />
         </TabsContent>
         <TabsContent value="rewards">
           <DataTable columns={approvedColumns} data={[]} />

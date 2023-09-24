@@ -1,9 +1,9 @@
 "use client";
 
-import { History } from "@/types";
+import { HistoryWithUser } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<History>[] = [
+export const columns: ColumnDef<HistoryWithUser>[] = [
   {
     accessorKey: "url",
     header: "URL",
@@ -13,7 +13,7 @@ export const columns: ColumnDef<History>[] = [
     header: "Application",
   },
   {
-    accessorKey: "created",
+    accessorKey: "createdAt",
     header: "Browsed At",
   },
 ];
