@@ -61,11 +61,19 @@ export async function DELETE(request: Request) {
     );
   }
 
-  const json = await request.json();
+  const searchParams = new URL(request.url).searchParams;
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json(
+      { error: "You must provide an id to delete" },
+      { status: 400 }
+    );
+  }
 
   const [response] = await db
     .delete(history)
-    .where(eq(history.id, json.id))
+    .where(eq(history.id, id))
     .returning();
 
   return NextResponse.json(response);
