@@ -1,5 +1,5 @@
 import db from "@/db/index";
-import { users } from "@/db/schema";
+import { dataUsage, users } from "@/db/schema";
 import { sql } from "drizzle-orm";
 import { SignJWT } from "jose";
 
@@ -27,6 +27,11 @@ export async function POST(request: Request) {
         }
       );
     }
+
+    await db.insert(dataUsage).values({
+      userId: response.id,
+      data: 0,
+    });
 
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 

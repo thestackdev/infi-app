@@ -77,6 +77,22 @@ export const requests = pgTable("requests", {
     .defaultNow(),
 });
 
+export const bookmarks = pgTable("bookmarks", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
+  url: text("url").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 export const requestsUsersRelations = relations(requests, ({ one }) => ({
   user: one(users, {
     fields: [requests.userId],
