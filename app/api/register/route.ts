@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       .setExpirationTime("365d")
       .sign(secret);
 
-    return new Response(JSON.stringify({ success: true, token }), {
+    return new Response(JSON.stringify({ success: true, token: token }), {
       status: 200,
       headers: {
         "content-type": "application/json",

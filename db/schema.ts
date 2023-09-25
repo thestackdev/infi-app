@@ -49,7 +49,6 @@ export const history = pgTable("history", {
     .references(() => users.id, {
       onDelete: "cascade",
     }),
-  data: text("data").notNull(),
   packageName: text("package_name").notNull(),
   url: text("url").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
