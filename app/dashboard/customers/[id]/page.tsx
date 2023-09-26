@@ -3,21 +3,24 @@ import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import db from "@/db";
-import { history } from "@/db/schema";
+import { apps, history, users } from "@/db/schema";
 import { columns as approvedColumns } from "@/utils/columns/approved-vouchers";
 import { columns as requestColumns } from "@/utils/columns/requests-columns";
 import { columns as userHistosy } from "@/utils/columns/user-history";
 import { Label } from "@/components/ui/label";
 import { eq } from "drizzle-orm";
 import moment from "moment";
+import { redirect } from "next/navigation";
 
 type PageProps = {
-  params: {};
+  params: {
+    id: string;
+  };
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export default async function Page({ searchParams }: PageProps) {
-  const id = searchParams.id as string;
+export default async function Page({ params, searchParams }: PageProps) {
+  const id = params.id as string;
 
   const historyResponse = await db.query.history.findMany({
     with: {
@@ -26,12 +29,22 @@ export default async function Page({ searchParams }: PageProps) {
     where: eq(history.userId, id),
   });
 
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, id),
+  });
+
+  const userApps = await db.query.apps.findFirst({
+    where: eq(apps.userId, id),
+  });
+
+  if (!user) return redirect("/dashboard/customers");
+
   return (
     <main className="max-w-screen-xl mx-auto p-4 mt-8">
       <div className="grid grid-cols-1 gap-4">
         <Card className="h-fit w-fit">
           <CardHeader>
-            <CardTitle>{historyResponse[0]?.user.name}</CardTitle>
+            <CardTitle>{user.name}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -74,6 +87,7 @@ export default async function Page({ searchParams }: PageProps) {
           <TabsTrigger value="history">History</TabsTrigger>
           <TabsTrigger value="rewards">Rewards</TabsTrigger>
           <TabsTrigger value="requests">Requests</TabsTrigger>
+          <TabsTrigger value="apps">Apps</TabsTrigger>
         </TabsList>
         <TabsContent value="history">
           <DataTable columns={userHistosy} data={historyResponse} />
@@ -82,6 +96,9 @@ export default async function Page({ searchParams }: PageProps) {
           <DataTable columns={approvedColumns} data={[]} />
         </TabsContent>
         <TabsContent value="requests">
+          <DataTable columns={requestColumns} data={[]} />
+        </TabsContent>
+        <TabsContent value="apps">
           <DataTable columns={requestColumns} data={[]} />
         </TabsContent>
       </Tabs>

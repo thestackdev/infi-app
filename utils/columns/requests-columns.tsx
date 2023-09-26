@@ -65,48 +65,50 @@ export const columns: ColumnDef<RequestsWithUserWithUsage>[] = [
     header: "Actions",
     cell: ({ row }) => {
       return (
-        <Dialog>
-          <DialogTrigger>
-            <Button>View</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Update Request Status</DialogTitle>
-              <DialogDescription>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="coupon-code" className="mt-4">
-                    Coupon Code
-                  </Label>
-                  <Input
-                    type="text"
-                    id="coupon-code"
-                    placeholder="Enter Coupon Code"
-                    className="mt-1"
-                  />
+        <div className="flex gap-2">
+          <Button variant="destructive">Reject</Button>
+          <Dialog>
+            <DialogTrigger>
+              <Button>Approve</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Update Request Status</DialogTitle>
+                <DialogDescription>
+                  <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Label htmlFor="coupon-code" className="mt-4">
+                      Coupon Code
+                    </Label>
+                    <Input
+                      type="text"
+                      id="coupon-code"
+                      placeholder="Enter Coupon Code"
+                      className="mt-1"
+                    />
+                  </div>
+                </DialogDescription>
+                <DialogDescription>
+                  <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Label htmlFor="coupon-expiry" className="mt-4">
+                      Coupon Expiry
+                    </Label>
+                    <Input
+                      type="date"
+                      id="coupon-expiry"
+                      placeholder="dd/mm/yy"
+                      className="mt-1"
+                    />
+                  </div>
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <div className="flex gap-4">
+                  <Button variant="default">Approve</Button>
                 </div>
-              </DialogDescription>
-              <DialogDescription>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="coupon-expiry" className="mt-4">
-                    Coupon Expiry
-                  </Label>
-                  <Input
-                    type="date"
-                    id="coupon-expiry"
-                    placeholder="dd/mm/yy"
-                    className="mt-1"
-                  />
-                </div>
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <div className="flex gap-4">
-                <Button variant="destructive">Reject</Button>
-                <Button variant="default">Approve</Button>
-              </div>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       );
     },
   },

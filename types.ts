@@ -1,7 +1,7 @@
 import { JWTPayload } from "jose";
 import * as z from "zod";
 import { createSelectSchema } from "drizzle-zod";
-import { dataUsage, requests, users } from "./db/schema";
+import { dataUsage, milestones, requests, users } from "./db/schema";
 
 export type Customers = {
   id: string;
@@ -20,12 +20,6 @@ export type Vouchers = {
   expires: string;
 };
 
-export type VoucherTypes = {
-  limit: string;
-  type: string;
-  company: string;
-};
-
 export type History = {
   id?: string;
   url: string;
@@ -36,10 +30,12 @@ export type History = {
 const selectUserSchema = createSelectSchema(users);
 const selectRequestsSchema = createSelectSchema(requests);
 const selectDataUsageSchema = createSelectSchema(dataUsage);
+const selectMilestoneSchema = createSelectSchema(milestones);
 
 export type User = z.infer<typeof selectUserSchema>;
 export type Request = z.infer<typeof selectRequestsSchema>;
 export type DataUsage = z.infer<typeof selectDataUsageSchema>;
+export type Milestone = z.infer<typeof selectMilestoneSchema>;
 
 export type Session = JWTPayload & {
   id: string;

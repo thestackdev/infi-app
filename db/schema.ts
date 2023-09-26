@@ -109,6 +109,18 @@ export const bookmarks = pgTable("bookmarks", {
     .defaultNow(),
 });
 
+export const milestones = pgTable("milestones", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  type: text("type").notNull(),
+  limit: bigint("limit", { mode: "number" }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 export const requestsUsersRelations = relations(requests, ({ one }) => ({
   user: one(users, {
     fields: [requests.userId],
