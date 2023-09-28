@@ -1,0 +1,1 @@
+ALTER TABLE "requests" ALTER COLUMN "milestone_id" SET NOT NULL;

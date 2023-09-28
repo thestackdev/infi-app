@@ -2,6 +2,7 @@
 
 import { HistoryWithUser } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
+import moment from "moment";
 
 export const columns: ColumnDef<HistoryWithUser>[] = [
   {
@@ -9,11 +10,14 @@ export const columns: ColumnDef<HistoryWithUser>[] = [
     header: "URL",
   },
   {
-    accessorKey: "package_name",
+    accessorKey: "packageName",
     header: "Application",
   },
   {
     accessorKey: "createdAt",
     header: "Browsed At",
+    cell: ({ row }) => {
+      return moment(row.original.createdAt).format("DD/MM/YYYY hh:mm A");
+    },
   },
 ];

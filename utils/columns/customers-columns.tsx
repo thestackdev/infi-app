@@ -1,8 +1,8 @@
 "use client";
 
-import { Customers, User } from "@/types";
+import { User } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { EyeIcon, Trash2 } from "lucide-react";
+import { EyeIcon } from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
 
@@ -29,7 +29,6 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex flex-row gap-4">
-          <Trash2 className="cursor-pointer" size={19} />
           <Link href={`/dashboard/customers/${row.original.id}`}>
             <EyeIcon className="cursor-pointer" size={19} />
           </Link>

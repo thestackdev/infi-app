@@ -1,32 +1,8 @@
 import db from "@/db";
-import { requests } from "@/db/schema";
+import { requests, vouchers } from "@/db/schema";
 import { checkSignedIn } from "@/helpers/session";
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-
-export async function GET(request: Request) {
-  const session = await checkSignedIn();
-
-  if (!session) {
-    return NextResponse.json(
-      { error: "You must be signed in to access this page" },
-      { status: 401 }
-    );
-  }
-
-  const searchParams = new URL(request.url).searchParams;
-  const page = parseInt(searchParams.get("page") || "1");
-  const limit = parseInt(searchParams.get("limit") || "10");
-
-  const response = await db.query.requests.findMany({
-    where: eq(requests.userId, session.id),
-    orderBy: desc(requests.createdAt),
-    offset: (page - 1) * limit,
-    limit: limit,
-  });
-
-  return NextResponse.json(response);
-}
 
 export async function POST(request: Request) {
   const session = await checkSignedIn();
@@ -39,12 +15,26 @@ export async function POST(request: Request) {
   }
 
   const json = await request.json();
-  const details = json.details;
+  const userId = json.userId;
+  const requestId = json.requestId;
+  const code = json.code;
+  const expiresAt = json.expiresAt;
 
-  const response = await db
-    .insert(requests)
-    .values({ details: details, userId: session.id })
+  await db
+    .insert(vouchers)
+    .values({
+      userId: userId,
+      request: requestId,
+      code: code,
+      expiresAt: new Date(expiresAt),
+    })
     .returning();
 
-  return NextResponse.json(response);
+  await db
+    .update(requests)
+    .set({ status: "approved" })
+    .where(eq(requests.id, requestId))
+    .returning();
+
+  return NextResponse.json({ success: "true" });
 }

@@ -18,6 +18,7 @@ export const users = pgTable("users", {
   password: varchar("password").notNull(),
   avatarUrl: text("avatar_url"),
   mobile: text("mobile"),
+  isActive: boolean("is_active").notNull().default(true),
   admin: boolean("admin").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
@@ -83,8 +84,34 @@ export const requests = pgTable("requests", {
     .references(() => users.id, {
       onDelete: "cascade",
     }),
-  details: text("details").notNull(),
+  milestoneId: uuid("milestone_id")
+    .notNull()
+    .references(() => milestones.id, {
+      onDelete: "cascade",
+    }),
   status: text("status").notNull().default("pending"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export const vouchers = pgTable("vouchers", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
+  request: uuid("request_id")
+    .notNull()
+    .references(() => requests.id, {
+      onDelete: "cascade",
+    }),
+  code: text("code").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -107,6 +134,13 @@ export const bookmarks = pgTable("bookmarks", {
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
+});
+
+export const userSettings = pgTable("user_settings", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  displayName: text("display_name").notNull(),
+  key: text("key").notNull(),
+  value: text("value").notNull(),
 });
 
 export const milestones = pgTable("milestones", {
@@ -138,6 +172,20 @@ export const usersUsageRelations = relations(users, ({ one }) => ({
 export const historyUsersRelations = relations(history, ({ one }) => ({
   user: one(users, {
     fields: [history.userId],
+    references: [users.id],
+  }),
+}));
+
+export const requestsMilestonesRelations = relations(requests, ({ one }) => ({
+  milestones: one(milestones, {
+    fields: [requests.milestoneId],
+    references: [milestones.id],
+  }),
+}));
+
+export const vouchersUsersRelations = relations(vouchers, ({ one }) => ({
+  user: one(users, {
+    fields: [vouchers.userId],
     references: [users.id],
   }),
 }));

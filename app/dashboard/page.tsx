@@ -7,7 +7,6 @@ import {
 import { DataTable } from "@/components/ui/data-table";
 import db from "@/db";
 import { dataUsage, requests, users } from "@/db/schema";
-import { Request } from "@/types";
 import { columns as customerColumns } from "@/utils/columns/customers-columns";
 import { columns as requestColumns } from "@/utils/columns/requests-columns";
 import { desc, eq, sql } from "drizzle-orm";
@@ -27,12 +26,14 @@ export default async function Home() {
     .from(dataUsage);
 
   const recentRequests = await db.query.requests.findMany({
+    where: eq(requests.status, "pending"),
     with: {
       user: {
         with: {
           usage: true,
         },
       },
+      milestones: true,
     },
     orderBy: desc(requests.createdAt),
     limit: 10,

@@ -3,12 +3,13 @@ import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import db from "@/db";
-import { apps, history, users } from "@/db/schema";
+import { apps, history, requests, users, vouchers } from "@/db/schema";
 import { columns as approvedColumns } from "@/utils/columns/approved-vouchers";
 import { columns as requestColumns } from "@/utils/columns/requests-columns";
+import { columns as appColumns } from "@/utils/columns/apps-columns";
 import { columns as userHistosy } from "@/utils/columns/user-history";
 import { Label } from "@/components/ui/label";
-import { eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import moment from "moment";
 import { redirect } from "next/navigation";
 
@@ -37,6 +38,27 @@ export default async function Page({ params, searchParams }: PageProps) {
     where: eq(apps.userId, id),
   });
 
+  const requestsResponse = await db.query.requests.findMany({
+    where: and(eq(requests.userId, id), eq(requests.status, "pending")),
+    with: {
+      user: {
+        with: {
+          usage: true,
+        },
+      },
+      milestones: true,
+    },
+    orderBy: desc(requests.createdAt),
+  });
+
+  const vouchersResponse = await db.query.vouchers.findMany({
+    where: eq(vouchers.userId, id),
+    orderBy: desc(vouchers.createdAt),
+    with: {
+      user: true,
+    },
+  });
+
   if (!user) return redirect("/dashboard/customers");
 
   return (
@@ -47,7 +69,7 @@ export default async function Page({ params, searchParams }: PageProps) {
             <CardTitle>{user.name}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <div className="grid w-full max-w-sm items-center gap-1.5">
+            <div className="grid w-full items-center gap-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
                 type="email"
@@ -57,17 +79,17 @@ export default async function Page({ params, searchParams }: PageProps) {
                 disabled
               />
             </div>
-            <div className="grid w-full max-w-sm items-center gap-1.5">
+            <div className="grid w-full items-center gap-1.5">
               <Label htmlFor="email">Phone</Label>
               <Input
                 type="number"
                 id="phone"
                 placeholder="Phone"
-                value={historyResponse[0]?.user?.mobile}
+                value={historyResponse[0]?.user?.mobile || "N/A"}
                 disabled
               />
             </div>
-            <div className="grid w-full max-w-sm items-center gap-1.5">
+            <div className="grid w-full items-center gap-1.5">
               <Label htmlFor="email">Register At</Label>
               <Input
                 type="text"
@@ -93,13 +115,13 @@ export default async function Page({ params, searchParams }: PageProps) {
           <DataTable columns={userHistosy} data={historyResponse} />
         </TabsContent>
         <TabsContent value="rewards">
-          <DataTable columns={approvedColumns} data={[]} />
+          <DataTable columns={approvedColumns} data={vouchersResponse} />
         </TabsContent>
         <TabsContent value="requests">
-          <DataTable columns={requestColumns} data={[]} />
+          <DataTable columns={requestColumns} data={requestsResponse} />
         </TabsContent>
         <TabsContent value="apps">
-          <DataTable columns={requestColumns} data={[]} />
+          <DataTable columns={appColumns} data={userApps?.data} />
         </TabsContent>
       </Tabs>
     </main>
