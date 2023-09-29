@@ -20,6 +20,8 @@ export const users = pgTable("users", {
   mobile: text("mobile"),
   isActive: boolean("is_active").notNull().default(true),
   admin: boolean("admin").notNull().default(false),
+  firebaseUid: text("firebase_uid").notNull().unique(),
+  wifiId: text("wifi_id").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

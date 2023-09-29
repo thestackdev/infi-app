@@ -1,22 +1,54 @@
 import db from "@/db/index";
 import { apps, dataUsage, users } from "@/db/schema";
-import { sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { SignJWT } from "jose";
+import { NextResponse } from "next/server";
+
+export async function GET(request: Request) {
+  try {
+    const searchParams = new URL(request.url).searchParams;
+    const firebaseUid = searchParams.get("firebaseUid");
+
+    if (!firebaseUid) {
+      return new NextResponse(
+        JSON.stringify({ error: "FirebaseUid is missing" }),
+        {
+          status: 400,
+          headers: { "content-type": "application/json" },
+        }
+      );
+    }
+
+    const [response] = await db
+      .select()
+      .from(users)
+      .where(eq(users.firebaseUid, firebaseUid));
+
+    if (!response) {
+      return new NextResponse(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    return new NextResponse(JSON.stringify(response), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  } catch (error) {
+    const e = error as Error;
+    return new Response(e.message, {
+      status: 500,
+      headers: { "content-type": "application/json" },
+    });
+  }
+}
 
 export async function POST(request: Request) {
   try {
-    const { username, name, email, password, mobile } = await request.json();
+    const json = await request.json();
 
-    const [response] = await db
-      .insert(users)
-      .values({
-        email,
-        password: sql`crypt(${password}, gen_salt('bf'))`,
-        name,
-        username,
-        mobile,
-      })
-      .returning();
+    const [response] = await db.insert(users).values(json).returning();
 
     if (!response) {
       return new Response(
