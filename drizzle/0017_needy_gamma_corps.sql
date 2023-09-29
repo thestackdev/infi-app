@@ -1,0 +1,1 @@
+ALTER TABLE "data_usage" ALTER COLUMN "data" SET DATA TYPE double precision;

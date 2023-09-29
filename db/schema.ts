@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  doublePrecision,
   jsonb,
   pgTable,
   text,
@@ -37,7 +38,7 @@ export const dataUsage = pgTable("data_usage", {
     .references(() => users.id, {
       onDelete: "cascade",
     }),
-  data: bigint("data", { mode: "number" }).notNull(),
+  data: doublePrecision("data").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

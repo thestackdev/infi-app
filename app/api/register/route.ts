@@ -31,9 +31,21 @@ export async function GET(request: Request) {
       });
     }
 
-    return new NextResponse(JSON.stringify(response), {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+
+    const token = await new SignJWT(response)
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setSubject(response.id)
+      .setExpirationTime("365d")
+      .sign(secret);
+
+    return new Response(JSON.stringify({ success: true, token: token }), {
       status: 200,
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        "Set-Cookie": `token=${token};Path=/`,
+      },
     });
   } catch (error) {
     const e = error as Error;
