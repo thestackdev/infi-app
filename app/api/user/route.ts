@@ -22,7 +22,8 @@ export async function GET(request: Request) {
     where: eq(dataUsage.userId, session.id),
   });
 
-  if (!dataUser) return NextResponse.json({ error: "User not found" });
+  if (!dataUser)
+    return NextResponse.json({ error: "User data record not created yet!" });
 
   const milestonesResponse = await db.query.milestones.findMany({
     where: lte(milestones.limit, dataUser.data),

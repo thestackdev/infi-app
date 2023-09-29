@@ -74,7 +74,7 @@ export async function POST(request: Request) {
 
     await db.insert(dataUsage).values({
       userId: response.id,
-      data: 0,
+      data: 0.0,
     });
 
     await db.insert(apps).values({
