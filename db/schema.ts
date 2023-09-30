@@ -1,6 +1,5 @@
 import { relations } from "drizzle-orm";
 import {
-  bigint,
   boolean,
   doublePrecision,
   jsonb,
@@ -149,7 +148,7 @@ export const userSettings = pgTable("user_settings", {
 export const milestones = pgTable("milestones", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   type: text("type").notNull(),
-  limit: bigint("limit", { mode: "number" }).notNull(),
+  limit: doublePrecision("limit").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

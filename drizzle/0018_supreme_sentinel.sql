@@ -1,0 +1,1 @@
+ALTER TABLE "milestones" ALTER COLUMN "limit" SET DATA TYPE double precision;

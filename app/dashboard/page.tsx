@@ -18,6 +18,7 @@ export default async function Home() {
     .from(users);
 
   const customers = await db.query.users.findMany({
+    where: eq(users.admin, false),
     limit: 10,
   });
 
@@ -72,7 +73,9 @@ export default async function Home() {
               </div>
               <div className="flex flex-col gap-1">
                 <CardTitle>Data Usages</CardTitle>
-                <CardDescription>{usages}</CardDescription>
+                <CardDescription>
+                  {Math.round(usages * 100) / 100} GB
+                </CardDescription>
               </div>
             </CardHeader>
           </Card>

@@ -1,6 +1,6 @@
 import db from "@/db/index";
 import { apps, dataUsage, users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { SignJWT } from "jose";
 import { NextResponse } from "next/server";
 
@@ -37,7 +37,6 @@ export async function GET(request: Request) {
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setSubject(response.id)
-      .setExpirationTime("365d")
       .sign(secret);
 
     return new Response(JSON.stringify({ success: true, token: token }), {
@@ -60,7 +59,13 @@ export async function POST(request: Request) {
   try {
     const json = await request.json();
 
-    const [response] = await db.insert(users).values(json).returning();
+    const [response] = await db
+      .insert(users)
+      .values({
+        ...json,
+        password: sql`crypt(${json.password}, gen_salt('bf'))`,
+      })
+      .returning();
 
     if (!response) {
       return new Response(
@@ -87,7 +92,6 @@ export async function POST(request: Request) {
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setSubject(response.id)
-      .setExpirationTime("365d")
       .sign(secret);
 
     return new Response(JSON.stringify({ success: true, token: token }), {

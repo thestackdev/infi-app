@@ -2,7 +2,7 @@
 
 import { User } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { EyeIcon } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
 
@@ -12,12 +12,12 @@ export const columns: ColumnDef<User>[] = [
     header: "Full Name",
   },
   {
-    accessorKey: "email",
-    header: "Email",
-  },
-  {
     accessorKey: "mobile",
     header: "Mobile",
+  },
+  {
+    accessorKey: "wifiId",
+    header: "WIFI ID",
   },
   {
     accessorKey: "created",
@@ -30,7 +30,7 @@ export const columns: ColumnDef<User>[] = [
       return (
         <div className="flex flex-row gap-4">
           <Link href={`/dashboard/customers/${row.original.id}`}>
-            <EyeIcon className="cursor-pointer" size={19} />
+            <ArrowRight className="cursor-pointer" size={19} />
           </Link>
         </div>
       );
