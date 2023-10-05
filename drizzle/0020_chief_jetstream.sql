@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "internet_id" text NOT NULL;

@@ -14,15 +14,13 @@ export async function GET(request: Request) {
     );
   }
 
-  const searchParams = new URL(request.url).searchParams;
-  const page = parseInt(searchParams.get("page") || "1");
-  const limit = parseInt(searchParams.get("limit") || "10");
-
   const response = await db.query.requests.findMany({
+    with: {
+      vouchers: true,
+      milestones: true,
+    },
     where: eq(requests.userId, session.id),
     orderBy: desc(requests.createdAt),
-    offset: (page - 1) * limit,
-    limit: limit,
   });
 
   return NextResponse.json(response);

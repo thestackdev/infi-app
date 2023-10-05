@@ -14,14 +14,15 @@ export const users = pgTable("users", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   username: varchar("username").unique().notNull(),
   name: text("full_name"),
-  email: varchar("email").unique().notNull(),
-  password: varchar("password").notNull(),
+  email: varchar("email"),
+  password: varchar("password"),
   avatarUrl: text("avatar_url"),
   mobile: text("mobile"),
   isActive: boolean("is_active").notNull().default(true),
   admin: boolean("admin").notNull().default(false),
   firebaseUid: text("firebase_uid").notNull().unique(),
-  wifiId: text("wifi_id").notNull(),
+  wifiId: text("wifi_id"),
+  internetId: text("internet_id"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -189,5 +190,19 @@ export const vouchersUsersRelations = relations(vouchers, ({ one }) => ({
   user: one(users, {
     fields: [vouchers.userId],
     references: [users.id],
+  }),
+}));
+
+export const requestsVouchersRelations = relations(requests, ({ one }) => ({
+  vouchers: one(vouchers, {
+    fields: [requests.id],
+    references: [vouchers.request],
+  }),
+}));
+
+export const requestsMilstonesRelations = relations(requests, ({ one }) => ({
+  milestones: one(milestones, {
+    fields: [requests.milestoneId],
+    references: [milestones.id],
   }),
 }));
