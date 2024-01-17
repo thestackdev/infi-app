@@ -23,6 +23,7 @@ interface FileUploadResponse {
 export default function AdsUpload() {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   async function uploadDocuments(
     url: string,
@@ -47,6 +48,7 @@ export default function AdsUpload() {
 
     await trigger({ files: files });
     setLoading(false);
+    setOpen(false);
   }
 
   function handleSelect(event) {
@@ -57,9 +59,9 @@ export default function AdsUpload() {
     }
   }
   return (
-    <Dialog>
+    <Dialog open={open}>
       <DialogTrigger>
-        <Button>Add</Button>
+        <Button onClick={() => setOpen(true)}>Add</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -69,7 +71,7 @@ export default function AdsUpload() {
               <div className="grid w-full max-w-sm items-center gap-1.5">
                 <Input
                   type="file"
-                  accept="image/*"
+                  accept="image/* video/*"
                   required
                   id="coupon-code"
                   placeholder="Enter Coupon Code"
@@ -81,7 +83,12 @@ export default function AdsUpload() {
             </DialogDescription>
             <div className="flex flex-row gap-4 items-center">
               <DialogTrigger>
-                <Button variant="destructive" type="button" className="mt-4">
+                <Button
+                  onClick={() => setOpen(false)}
+                  variant="destructive"
+                  type="button"
+                  className="mt-4"
+                >
                   Cancel
                 </Button>
               </DialogTrigger>

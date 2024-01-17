@@ -12,6 +12,6 @@ export async function GET(request: Request) {
   }
 
   return NextResponse.json({
-    src: `https://infiapp-ads.s3.amazonaws.com.s3.amazonaws.com/${response.rows[0].src}`,
+    src: `https://infiapp-ads.s3.amazonaws.com/${response.rows[0].src}`,
   });
 }
