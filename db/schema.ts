@@ -158,6 +158,14 @@ export const milestones = pgTable("milestones", {
     .defaultNow(),
 });
 
+export const ads = pgTable("ads", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  src: text("src").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 export const requestsUsersRelations = relations(requests, ({ one }) => ({
   user: one(users, {
     fields: [requests.userId],

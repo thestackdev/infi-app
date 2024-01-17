@@ -120,6 +120,11 @@ export default function MainNav({ className, session }: MainNavProps) {
                         </Link>
                       </SheetClose>
                     </AccordionContent>
+                    <AccordionContent>
+                      <SheetClose asChild>
+                        <Link href="/dashboard/ads-settings">Ads Settings</Link>
+                      </SheetClose>
+                    </AccordionContent>
                   </AccordionItem>
                 </Accordion>
               </ul>
