@@ -10,13 +10,12 @@ export default function Page() {
 
   const { data } = useSWR<{ Key?: string }[]>("/api/ads-upload", fetcher);
 
-  const S3Image = ({ Key }: { Key: string }) => {
-    const { data } = useSWR<{ src: string }>(`/api/ads-upload/${Key}`, fetcher);
+  const S3Image = ({ src }: { src: string }) => {
     return (
       <Card className="h-48 w-48">
         <Image
           className="object-contain"
-          src={data?.src}
+          src={src}
           alt="ads image"
           width={200}
           height={200}
@@ -33,7 +32,7 @@ export default function Page() {
       </div>
       <div className="flex flex-row flex-wrap gap-4">
         {data?.map((image) => (
-          <S3Image Key={image.Key} />
+          <S3Image src={image.src} />
         ))}
       </div>
     </main>

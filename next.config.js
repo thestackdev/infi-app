@@ -10,7 +10,7 @@ const nextConfig = {
     serverActions: true,
   },
   images: {
-    domains: ["infiapp-ads.s3.ap-south-1.amazonaws.com"],
+    domains: ["infiapp-ads.s3.amazonaws.com"],
   },
 };
 
