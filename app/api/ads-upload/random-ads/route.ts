@@ -15,3 +15,6 @@ export async function GET(request: Request) {
     src: `https://infiapp-ads.s3.amazonaws.com/${response.rows[0].src}`,
   });
 }
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
